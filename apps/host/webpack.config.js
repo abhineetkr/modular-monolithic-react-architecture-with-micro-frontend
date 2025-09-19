@@ -1,0 +1,49 @@
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { ModuleFederationPlugin } = require("@module-federation/enhanced/webpack");
+
+module.exports = {
+  entry: "./src/index.js",
+  mode: "development",
+  devServer: {
+    port: 3000,
+    historyApiFallback: true
+  },
+  output: {
+    publicPath: "auto",
+    clean: true
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"]
+          }
+        }
+      }
+    ]
+  },
+  resolve: {
+    extensions: [".js", ".jsx"]
+  },
+  plugins: [
+    new ModuleFederationPlugin({
+      name: "host",
+      remotes: {
+        auth: "auth@http://localhost:3001/remoteEntry.js", // Fixed: correct port
+        dashboard: "dashboard@http://localhost:3002/remoteEntry.js"
+      },
+      shared: {
+        react: { singleton: true, requiredVersion: "^18.2.0", eager: true },
+        "react-dom": { singleton: true, requiredVersion: "^18.2.0", eager: true },
+        "react-router-dom": { singleton: true, requiredVersion: "^6.22.0", eager: true }
+      }
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/index.html"
+    })
+  ]
+};
