@@ -5,7 +5,7 @@ import HostApp from "./App";
 const root = createRoot(document.getElementById("root"));
 
 root.render(
-  <React.StrictMode>
-    <HostApp />
-  </React.StrictMode>
+	<React.StrictMode>
+		<HostApp />
+	</React.StrictMode>
 );

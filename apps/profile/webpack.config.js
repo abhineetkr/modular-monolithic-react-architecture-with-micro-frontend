@@ -5,7 +5,7 @@ module.exports = {
 	entry: "./src/index.js",
 	mode: "development",
 	devServer: {
-		port: 3000,
+		port: 3003,
 		historyApiFallback: true
 	},
 	output: {
@@ -31,10 +31,10 @@ module.exports = {
 	},
 	plugins: [
 		new ModuleFederationPlugin({
-			name: "host",
-			remotes: {
-				auth: "auth@http://localhost:3001/remoteEntry.js", // Fixed: correct port
-				dashboard: "dashboard@http://localhost:3002/remoteEntry.js"
+			name: "profile",
+			filename: "remoteEntry.js",
+			exposes: {
+				"./ProfileApp": "./src/bootstrap.js"
 			},
 			shared: {
 				react: { singleton: true, requiredVersion: "^18.2.0", eager: true },

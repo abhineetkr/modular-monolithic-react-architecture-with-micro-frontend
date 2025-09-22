@@ -6,17 +6,21 @@
     "apps/*"
   ],
   "scripts": {
-    "start:dev": "concurrently \"npm run start --workspace=host\" \"npm run start --workspace=auth\" \"npm run start --workspace=dashboard\"",
+    "start:dev": "concurrently \"npm run start --workspace=shared\" \"npm run start --workspace=host\" \"npm run start --workspace=auth\" \"npm run start --workspace=dashboard\" \"npm run start --workspace=profile\"",
     "start:auth": "npm run start --workspace=auth",
     "start:dashboard": "npm run start --workspace=dashboard",
+    "start:profile": "npm run start --workspace=profile",
     "start:host": "npm run start --workspace=host",
+    "start:shared": "npm run start --workspace=shared",
+    "build:shared": "npm run build --workspace=shared",
     "build:auth": "npm run build --workspace=auth",
-    "build:dashboard": "npm run build --workspace=dashboard", 
+    "build:dashboard": "npm run build --workspace=dashboard",
+    "build:profile": "npm run build --workspace=profile",
     "build:host": "npm run build --workspace=host",
-    "build:remotes": "npm run build:auth && npm run build:dashboard",
+    "build:remotes": "npm run build:shared && npm run build:auth && npm run build:dashboard && npm run build:profile",
     "build:all": "npm run build:remotes && node ./scripts/copyRemotes.js && npm run build:host",
     "clean": "npm run clean --workspaces",
-    "install:all": "npm install && npm install --workspace=auth && npm install --workspace=dashboard && npm install --workspace=host"
+    "install:all": "npm install && npm install --workspace=shared && npm install --workspace=auth && npm install --workspace=dashboard && npm install --workspace=profile && npm install --workspace=host"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
