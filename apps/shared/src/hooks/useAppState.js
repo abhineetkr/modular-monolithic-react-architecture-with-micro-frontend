@@ -1,25 +1,38 @@
-import { useState, useEffect } from 'react';
-import appStore from '../store/AppStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginSuccess, logout, updateUser } from '../store/slices/authSlice';
+import { setCurrentModule } from '../store/slices/appSlice';
 
 export const useAppState = () => {
-	const [state, setState] = useState(appStore.getState());
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
+  const app = useSelector((state) => state.app);
 
-	useEffect(() => {
-		appStore.init();
-		setState(appStore.getState());
+  const login = (userData) => {
+    dispatch(loginSuccess(userData));
+    dispatch(setCurrentModule('dashboard'));
+  };
 
-		const unsubscribe = appStore.subscribe((newState) => {
-			setState(newState);
-		});
+  const logoutUser = () => {
+    dispatch(logout());
+    dispatch(setCurrentModule('auth'));
+    sessionStorage.removeItem('reduxState');
+  };
 
-		return unsubscribe;
-	}, []);
+  const updateUserData = (userData) => {
+    dispatch(updateUser(userData));
+  };
 
-	return {
-		...state,
-		login: appStore.login.bind(appStore),
-		logout: appStore.logout.bind(appStore),
-		updateUser: appStore.updateUser.bind(appStore),
-		setCurrentModule: appStore.setCurrentModule.bind(appStore)
-	};
+  const changeModule = (module) => {
+    dispatch(setCurrentModule(module));
+  };
+
+  return {
+    user: auth.user,
+    isAuthenticated: auth.isAuthenticated,
+    currentModule: app.currentModule,
+    login,
+    logout: logoutUser,
+    updateUser: updateUserData,
+    setCurrentModule: changeModule,
+  };
 };
