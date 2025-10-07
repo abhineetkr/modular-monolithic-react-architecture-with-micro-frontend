@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppState } from "../../shared/src/hooks/useAppState";
-import { hydrateStoreFromSession } from "../../shared/src/utils/stateHydration";
 import MicroFrontendLoader from "./components/MicroFrontendLoader";
 
 // Lazy load micro frontends
@@ -11,10 +10,8 @@ const ProfileApp = React.lazy(() => import("../../profile/src/App"));
 const HostApp = () => {
   const { isAuthenticated, currentModule } = useAppState();
 
-  // Hydrate state on app initialization
-  useEffect(() => {
-    hydrateStoreFromSession();
-  }, []);
+  // NO MORE HYDRATION NEEDED!
+  // Redux-persist handles it automatically via PersistGate
 
   const renderCurrentModule = () => {
     if (!isAuthenticated) {

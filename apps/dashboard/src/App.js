@@ -3,11 +3,21 @@ import { useAppState } from "../../shared/src/hooks/useAppState";
 
 const DashboardApp = () => {
 	const { user, logout, setCurrentModule } = useAppState();
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [activeTab, setActiveTab] = useState('overview');
-
-	const handleLogout = () => {
+	
+	// Normal logout - clears state and persisted data
+	const handleLogout = async () => {
 		if (window.confirm('Are you sure you want to logout?')) {
-			logout();
+			setIsLoggingOut(true);
+
+			try {
+				await logout(); // This purges redux-persist storage
+				// State automatically switches to auth due to reducer
+			} catch (error) {
+				console.error('Logout failed:', error);
+				setIsLoggingOut(false);
+			}
 		}
 	};
 
@@ -170,51 +180,48 @@ const DashboardApp = () => {
 
 				{/* Bottom Actions */}
 				<div style={{
-					position: 'absolute',
-					bottom: '1rem',
-					left: '0',
-					right: '0',
-					padding: '0 1rem'
-				}}>
-					<button
-						onClick={navigateToProfile}
-						style={{
-							width: '19%',
-							padding: '0.75rem',
-							backgroundColor: '#007bff',
-							color: 'white',
-							border: 'none',
-							borderRadius: '4px',
-							cursor: 'pointer',
-							marginBottom: '0.5rem',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							gap: '0.5rem'
-						}}
-					>
-						👤 Profile
-					</button>
-					<button
-						onClick={handleLogout}
-						style={{
-							width: '19%',
-							padding: '0.75rem',
-							backgroundColor: '#dc3545',
-							color: 'white',
-							border: 'none',
-							borderRadius: '4px',
-							cursor: 'pointer',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							gap: '0.5rem'
-						}}
-					>
-						🚪 Logout
-					</button>
-				</div>
-			</div>
+          position: 'absolute',
+          bottom: '1rem',
+          left: '0',
+          right: '0',
+          padding: '0 1rem'
+        }}>
+          <button
+            onClick={navigateToProfile}
+            disabled={isLoggingOut}
+            style={{
+              width: '19%',
+              padding: '0.75rem',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: isLoggingOut ? 'not-allowed' : 'pointer',
+              marginBottom: '0.5rem',
+              opacity: isLoggingOut ? 0.5 : 1
+            }}
+          >
+            👤 Profile
+          </button>
+          <br/>
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            style={{
+              width: '19%',
+              padding: '0.75rem',
+              backgroundColor: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: isLoggingOut ? 'not-allowed' : 'pointer',
+              opacity: isLoggingOut ? 0.5 : 1
+            }}
+          >
+            {isLoggingOut ? '⏳ Logging out...' : '🚪 Logout'}
+          </button>
+        </div>
+      </div>
 
 			{/* Main Content */}
 			<div style={{

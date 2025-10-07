@@ -42,7 +42,8 @@ module.exports = {
         react: { singleton: true, requiredVersion: "^18.2.0", eager: true },
         "react-dom": { singleton: true, requiredVersion: "^18.2.0", eager: true },
         "@reduxjs/toolkit": { singleton: true, requiredVersion: "^1.9.7", eager: true },
-        "react-redux": { singleton: true, requiredVersion: "^8.1.3", eager: true }
+        "react-redux": { singleton: true, requiredVersion: "^8.1.3", eager: true },
+        "redux-persist": { singleton: true, requiredVersion: "^6.0.0", eager: true }
       }
     })
   ]

@@ -1,33 +1,49 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { 
+  persistStore, 
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage/session'; // ✅ USE SESSION STORAGE
+import { combineReducers } from 'redux';
 import authSlice from './slices/authSlice';
 import appSlice from './slices/appSlice';
 
-// Simple persistence middleware
-const persistenceMiddleware = (store) => (next) => (action) => {
-  const result = next(action);
-  const state = store.getState();
-  
-  // Save to sessionStorage for micro frontend communication
-  const persistedState = {
-    auth: state.auth,
-    app: state.app,
-  };
-  
-  sessionStorage.setItem('reduxState', JSON.stringify(persistedState));
-  return result;
+// Persist configuration
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage, // This now uses sessionStorage
+  whitelist: ['auth', 'app'], // Only persist these reducers
 };
 
+// Combine reducers
+const rootReducer = combineReducers({
+  auth: authSlice,
+  app: appSlice,
+});
+
+// Create persisted reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// Configure store
 const store = configureStore({
-  reducer: {
-    auth: authSlice,
-    app: appSlice,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST'],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(persistenceMiddleware),
+    }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
+
+// Create persistor
+export const persistor = persistStore(store);
 
 export default store;
